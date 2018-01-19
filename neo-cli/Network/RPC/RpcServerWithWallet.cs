@@ -4,7 +4,10 @@ using Neo.IO;
 using Neo.IO.Json;
 using Neo.SmartContract;
 using Neo.Wallets;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Neo.Network.RPC
@@ -20,6 +23,28 @@ namespace Neo.Network.RPC
         {
             switch (method)
             {
+                case "getblocknotification":
+                    uint index;
+                    if (_params[0] is JNumber)
+                    {
+                        index = (uint)_params[0].AsNumber();
+                        string path = Path.Combine(AppContext.BaseDirectory, Settings.Default.Paths.Notifications);
+                        Directory.CreateDirectory(path);
+                        path = Path.Combine(path, $"block-{index}.json");
+                        if (File.Exists(path))
+                        {
+                            JObject json = JObject.Parse(File.ReadAllText(path));
+                            return json;
+                        }
+                        else
+                        {
+                            throw new RpcException(-100, "Unknown block");
+                        }
+                    }
+                    else
+                    {
+                        throw new RpcException(-32602, "Invalid params");
+                    }
                 case "getbalance":
                     if (Program.Wallet == null)
                         throw new RpcException(-400, "Access denied.");

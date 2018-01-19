@@ -763,7 +763,7 @@ namespace Neo.Shell
                     File.Delete(acc_zip_path);
                 }
                 LocalNode.Start(Settings.Default.P2P.Port, Settings.Default.P2P.WsPort);
-                bool recordNotifications = false;
+                bool recordNotifications = true;
                 for (int i = 0; i < args.Length; i++)
                 {
                     switch (args[i])
